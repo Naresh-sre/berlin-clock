@@ -90,6 +90,12 @@ When the time is  23:25:2.5
 Then the clock should look like
 Time values must be Integer: 23:25:2.5
 
+Scenario: Wrong Time. 
+When the time is  24:25:05   
+Then the clock should look like
+Wrong Input
+
+
 
 
 

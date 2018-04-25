@@ -41,7 +41,6 @@ public class BerlinClockImpl implements TimeConverter {
             for (final String error : errorMsg) {
                 sj.add(error);
             }
-
             return sj.toString();
         }
 
@@ -54,12 +53,13 @@ public class BerlinClockImpl implements TimeConverter {
         return berlinTime;
     }
 
-    private String getBerlineMinuFirstdRow(final int minutes) {
-        return getOnAndOffLights(minutes / 5, 11, YELLO_LAMP).replaceAll("YYY", "YYR");
+    protected String getBerlineMinuFirstdRow(final int minutes) {
+          return getOnAndOffLights(minutes / 5, 11, YELLO_LAMP).replaceAll("YYY", "YYR");
 
     }
 
-    private String getBerlineMinuteSecondRow(final Integer minutes) {
+    protected String getBerlineMinuteSecondRow(final int minutes) {
+
         return getOnAndOffLights(minutes % 5, 4, YELLO_LAMP);
     }
 
@@ -67,7 +67,7 @@ public class BerlinClockImpl implements TimeConverter {
      * @param hour
      * @return
      */
-    private String getBerlinHourFirstRow(final Integer hour) {
+    protected String getBerlinHourFirstRow(final int hour) {
 
         return getOnAndOffLights(hour / 5, 4, RED_LAMP);
     }
@@ -76,12 +76,12 @@ public class BerlinClockImpl implements TimeConverter {
      * @param hour
      * @return
      */
-    private String getBerlinHourSecondRow(final Integer hour) {
+    protected String getBerlinHourSecondRow(final int hour) {
 
         return getOnAndOffLights(hour % 5, 4, RED_LAMP);
     }
 
-    private String getBerlinSeconds(final Integer second) {
+    protected String getBerlinSeconds(final Integer second) {
 
         return second % 2 == 0 ? YELLO_LAMP : "O";
     }
@@ -89,6 +89,9 @@ public class BerlinClockImpl implements TimeConverter {
     private String getOnAndOffLights(final int onLamp, final int totalLampInRow, final String lampType) {
 
         final StringBuilder lampInRow = new StringBuilder(totalLampInRow);
+        if(onLamp > totalLampInRow ){
+            return BerlinMsg.WRONG_INPUT.getkey();
+        }
         for (int i = 0; i < onLamp; i++) {
             lampInRow.append(lampType);
         }
@@ -100,6 +103,12 @@ public class BerlinClockImpl implements TimeConverter {
     }
 
     private boolean isTimeinValidRange(final int hours, final int minutes, final int seconds, final List<String> errorMsg) {
+
+        if( hours== HOURS_MAX_RANGE && minutes!=0 &&  seconds!=0 ){
+            errorMsg.add(BerlinMsg.WRONG_INPUT.getkey());
+            return false;
+        }
+
         validateTimeRangs(hours, HOURS_MIN_RANGE, HOURS_MAX_RANGE, BerlinMsg.HOUR.getkey(), errorMsg);
         validateTimeRangs(minutes, MINUTE_SECOND_MIN_RANGE, MINUTE_SECOND_MAX_RANGE, BerlinMsg.MINUTE.getkey(), errorMsg);
         validateTimeRangs(seconds, MINUTE_SECOND_MIN_RANGE, MINUTE_SECOND_MAX_RANGE, BerlinMsg.SECOND.getkey(), errorMsg);
@@ -112,10 +121,10 @@ public class BerlinClockImpl implements TimeConverter {
 
     }
 
-    private boolean validateTimeRangs(final int timePart, final int minRange, final int maxRange, final String timeUnit,
+    protected boolean validateTimeRangs(final int timePart, final int minRange, final int maxRange, final String timeUnit,
         final List<String> errorMsg) {
         if (timePart < minRange || timePart > maxRange) {
-            errorMsg.add(BerlinMsg.TIME_UNIT_OUT_OF_RANGE.getkey() + timeUnit);
+            errorMsg.add(BerlinMsg.TIME_UNIT_OUT_OF_RANGE.getkey()+timeUnit);
             return false;
         }
         return true;
